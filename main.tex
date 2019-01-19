@@ -1,0 +1,274 @@
+\documentclass[12pt, a4paper]{article}
+
+% Настройка размера страницы
+\usepackage[a4paper,bindingoffset=0.2in,%
+            left=1in,right=1in,top=1in,bottom=1in,%
+            footskip=.25in]{geometry}
+
+% Настройка шрифтов
+\usepackage[russian]{babel}
+\usepackage{fontspec}
+\setmainfont[
+  Ligatures=TeX,
+  Extension=.otf,
+  BoldFont=cmunbx,
+  ItalicFont=cmunti,
+  BoldItalicFont=cmunbi,
+]{cmunrm}
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+% Для математики
+\usepackage{amssymb,amsmath}
+
+% Для отображения алгоритмов
+\usepackage[linesnumbered,lined,commentsnumbered]{algorithm2e}
+
+% Собственные обозначения для скобок
+\newcommand{\roubr}[1]{\left(#1\right)}
+\newcommand{\sqbr}[1]{\left(#1\right)}
+\newcommand{\cubr}[1]{\left(#1\right)}
+
+% Для отображения ссылок
+\usepackage{hyperref}
+
+\begin{document}
+\title{Метод Ньютона для решения систем нелинейных уравнений}
+\author{Шепрут Илья}
+\maketitle
+
+Всё будет описано для размерности $n = 2$, но это легко обобщается на более высокие размерности.
+
+\section{Формулировка задачи}
+
+Дана Система Нелинейных Уравнений (СНУ) в виде:
+
+$$\left\{
+\begin{aligned}
+	&F_1(x_1,\ x_2) = 0 \\
+	&F_2(x_1,\ x_2) = 0
+\end{aligned}
+\right.
+$$
+
+Требуется, чтобы она имела непрерывные производные $1$ порядка.
+
+Необходимо найти такие $x_1$, $x_2$ при которых система оборачивается в нуль. Это называется решение СНУ.
+
+\section{Обозначения}
+
+Её можно преобразовать к следующему виду, заменив аргументы функции на один векторный аргумент $\mathbf{x} = (x_1,\ x_2)$:
+
+$$\left\{
+\begin{aligned}
+	&F_1(\mathbf{x}) = 0 \\
+	&F_2(\mathbf{x}) = 0
+\end{aligned}
+\right.
+$$
+
+Далее эту СНУ можно преобразовать к одной вектор-функции $\mathbf{F}$, такой что $ \mathbf{F} : \mathbb{R}^2 \to \mathbb{R}^2 $:
+
+$$\mathbf{F}(\mathbf{x}) = \roubr{
+\begin{aligned}
+	&F_1(\mathbf{x})\\
+	&F_2(\mathbf{x})\\
+\end{aligned}
+}
+$$
+
+Тогда исходная система уравнений примет вид:
+
+$$\mathbf{F}(\mathbf{x}) = \mathbf{0}$$
+
+где $\mathbf{0}= (0,\ 0)^T$.
+
+\section{Преобразования}
+
+\subsection{Разложение в ряд Тейлора для функции многих переменных}
+
+Взято с \href{https://ru.wikipedia.org/wiki/%D0%A0%D1%8F%D0%B4_%D0%A2%D0%B5%D0%B9%D0%BB%D0%BE%D1%80%D0%B0#%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%A2%D0%B5%D0%B9%D0%BB%D0%BE%D1%80%D0%B0_%D0%B4%D0%BB%D1%8F_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8_%D0%B4%D0%B2%D1%83%D1%85_%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85}{Википедии}.
+
+Пусть дана функция $f(\mathbf{x}) : \mathbb{R}^2 \to \mathbb{R}$, $\mathbf{x} = (x_1,\ x_2)^T$.
+
+Разложение функции $f(\mathbf{x})$ будет произведено в окрестности точки $\mathbf{a} = (a_1,\ a_2)^T$. Требуется, чтобы у функции $f$ имелись непрерывные производные до $(2+1)$-го порядка включительно по всем переменным.
+
+Тогда разложение в ряд Тейлора имеет следующий вид:
+
+$$ f(\mathbf{x}) = f(\mathbf{a}) + \sum_{i = 1}^n \frac{\partial f(\mathbf{a})}{\partial x_i} (x_i - a_i) + \frac{1}{2!} \sum_{i = 1}^2\sum_{j = 1}^2 \frac{\partial f(\mathbf{a})}{\partial x_i \partial x_j} (x_i - a_i) (x_j - a_j) + R_3(\mathbf{x}) $$
+
+Раскроем сумму первых двух членов предыдущего равенства:
+
+$$ f(\mathbf{x}) = f(\mathbf{a}) + \frac{\partial f(\mathbf{a})}{\partial x_i} (x_1 - a_1) + \frac{\partial f(\mathbf{a})}{\partial x_2} (x_2 - a_2) + R_2(\mathbf{x}) $$
+
+Где $R_n(\mathbf{x})$ --- остаточный член в форме Лагранжа, $ R_n(\mathbf{x}) \xrightarrow{n\to \infty} 0 $.
+
+\subsection{Разложение в ряд Тейлора СНУ}
+
+Любой итерационный метод имеет начальное приближение $\mathbf{x}^{[0]}$, которое задается извне. На $k$-м шаге имеется текущее решение $\mathbf{x}^{[k]}$. Обозначим за $\hat{\mathbf{x}}$ искомое решение, и введем ещё обозначение $\Delta\mathbf{x}^{[k]} = \hat{\mathbf{x}} - \mathbf{x}^{[k]}$.
+
+Разложим функцию $F_i\roubr{\mathbf{x}}$ в окрестности точки $\mathbf{x}^{[k]}$ в ряд Тейлора:
+
+$$ F_i\roubr{\mathbf{x}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \roubr{x_1 - x^{[k]}_1} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \roubr{x_2 - x^{[k]}_2} + R_2\roubr{\mathbf{x}} $$
+
+Подставив в это разложение точку $\hat{\mathbf{x}}$ получаем следующее:
+
+$$\displaystyle F_i\roubr{\hat{\mathbf{x}}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R_2\roubr{\mathbf{x}^{[k]}} $$
+
+Теперь запишем СНУ $\mathbf{F}\roubr{\hat{\mathbf{x}}} = 0$ с учетом предыдущего разложения:
+
+$$ \left\{
+\begin{aligned}
+& F_1\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_1\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_1\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R^{F_1}_2\roubr{\mathbf{x}^{[k]}} = 0 \\
+& F_2\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_2\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_2\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R^{F_2}_2\roubr{\mathbf{x}^{[k]}} = 0
+\end{aligned}
+\right.$$
+
+Или в матричном виде:
+
+$$
+\mathbf{F}\roubr{\mathbf{x}^{[k]}} + 
+\begin{pmatrix}
+\displaystyle \frac{\partial F_1}{\partial x_1} & \displaystyle \frac{\partial F_1}{\partial x_2} \\
+\displaystyle \frac{\partial F_2}{\partial x_1} & \displaystyle \frac{\partial F_2}{\partial x_2}
+\end{pmatrix} \roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} + \begin{pmatrix}
+\displaystyle R^{F_1}_2\roubr{\mathbf{x}^{[k]}} \\
+\displaystyle R^{F_2}_2\roubr{\mathbf{x}^{[k]}}
+\end{pmatrix} = \mathbf{0}
+$$
+
+$$
+\mathbf{F}\roubr{\mathbf{x}^{[k]}} + \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} + \mathbf{R}_2\roubr{\mathbf{x}^{[k]}} = \mathbf{0}
+$$
+
+$$
+\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}} - \mathbf{R}_2\roubr{\mathbf{x}^{[k]}}
+$$
+
+Где $\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}}$ --- матрица Якоби функции $\mathbf{F}$ в точке $\mathbf{x}$.
+
+Из этого уравнения можно найти $\Delta\mathbf{x}^{[k]}$, который прибавляется к текущему решению $\mathbf{x}^{[k]}$ чтобы найти $\hat{\mathbf{x}}$. 
+
+Мы не не знаем как вычислять $\mathbf{R}_2(\mathbf{x})$, но можем им пренебречь, так как он стремится к нулю. Именно из-за этого принебрежения мы не сразу получаем точное решение, а процесс становится итеративным. Итог:
+
+$$ \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}} $$
+
+Можно заметить, что это СЛАУ. Её можно легко решить известными методами.
+
+\section{Алгоритм}
+
+Весь метод заключается в итерационном процессе:
+
+$$\mathbf{x}^{[k+1]} = \mathbf{x}^{[k]} + c \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^{-1} \mathbf{F}\roubr{\mathbf{x}^{[k]}},\ c \in \sqbr{0,\ 1}$$
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwData{$\varepsilon_1$, $\varepsilon_2$, $m$, $\mathbf{F}$, $\mathbf{x}^{[0]}$}
+\KwResult{$\mathbf{x}^{[k]}$}
+\Begin{
+	$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[0]}$\;
+	$\beta \leftarrow 1$\;
+	$i \leftarrow 0$\;
+	\While{$||\mathbf{F}\roubr{\mathbf{x}}|| > \varepsilon_1$ и $\beta > \varepsilon_2$ и $i < m$}{
+		$\mathbf{A} \leftarrow \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
+		$\mathbf{b} \leftarrow \mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
+		Решить СЛАУ $\mathbf{A}\cdot \mathbf{x} = \mathbf{b}$, результат поместить в $\mathbf{x}$\;
+		$\beta \leftarrow 1$\;
+		\While{$||\mathbf{F}\roubr{\mathbf{x}^{[k]} + \beta \mathbf{x}}|| > ||\mathbf{F}\roubr{\mathbf{x}^{[k]}}||$ и $\beta > \varepsilon_2$}{
+			$\beta \leftarrow 0.5 \beta$\;
+		}
+		$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[k]} + \beta \mathbf{x}$\;
+		$i \leftarrow i + 1$\;
+	}
+}
+\end{algorithm}
+
+Дополнительный цикл с переменной $\beta$ создан для того, чтобы невязка всегда уменьшалась.
+
+\textit{Заметьте, что} данный алгоритм не зависит от размерности системы, а, следовательно, может быть применен к любой размерности задачи.
+
+\textit{Замечание:} в алгоритме используется матрица Якоби в известной точке, что означает, что знать её аналитическое выражение не нужно: её можно вычислять при помощи численного взятия производной в конкретной точке.
+
+\subsection{Одномерный случай}
+
+В одномерном случае это преобразуется к:
+
+$$ x^{[k+1]} = x^{[k]} + c \roubr{\frac{d f\roubr{x^{[k]}}}{dx}}^{-1} f\roubr{x^{[k]}} = x^{[k]} + c \frac{f\roubr{x^{[k]}}}{f'\roubr{x^{[k]}}} $$
+
+\section{Конкретный пример}
+
+Например, у нас имеется следующая СНУ:
+
+$$\left\{
+\begin{aligned}
+	&(x-x_1)^2 + (y-y_1)^2 = (r_1 + r)^2 \\
+	&(x-x_2)^2 + (y-y_2)^2 = (r_1 + r)^2 \\
+	&\cfrac{|ax + by + c|}{\sqrt{a^2 + b^2}} = r
+\end{aligned}
+\right.
+$$
+
+Решением этой СНУ является окружность с центром в точке $(x,\ y)$ и радиусом $r$, которая касается внешним образом окружностей $(x_1,\ y_1,\ r_1)$, $(x_2,\ y_2,\ r_2)$ и прямой $ax + by + c = 0$.
+
+Для этой системы получим:
+
+$$
+\mathbf{F} = \begin{pmatrix}
+	(x-x_1)^2 + (y-y_1)^2 - (r_1 + r)^2 \\
+	(x-x_2)^2 + (y-y_2)^2 - (r_1 + r)^2 \\
+	\cfrac{|ax + by + c|}{\sqrt{a^2 + b^2}} - r
+\end{pmatrix},\
+\mathbf{J}_\mathbf{F} = \begin{pmatrix}
+	2(x-x_1) & 2(y-y_1) & -2(r_1 + r) \\
+	2(x-x_2) & 2(y-y_2) & -2(r_2 + r) \\
+	\cfrac{|a|}{\sqrt{a^2 + b^2}} & \cfrac{|b|}{\sqrt{a^2 + b^2}} & -1
+\end{pmatrix}
+$$
+
+Далее остается только применить алгоритм.
+
+\section{Когда размерность СНУ не соответствует размерности решения}
+
+Пусть дана СНУ:
+
+$$\left\{
+\begin{aligned}
+	&F_1(x_1,\ x_2,\ \dots,\ x_n) = 0 \\
+	&F_2(x_1,\ x_2,\ \dots,\ x_n) = 0 \\
+	&\dots \\
+	&F_m(x_1,\ x_2,\ \dots,\ x_n) = 0
+\end{aligned}
+\right.
+$$
+
+Вышеописанный алгоритм работает только когда $m=n$, в случае же $m\neq n$ есть несколько методов приведения к системы квадратному виду.
+
+Следующие методы показывают как надо модифицировать СНУ для конкретной точки, поэтому не получится их применить для того, чтобы один раз вычислить новую СНУ, новую СНУ придётся считать на каждой итерации заного.
+
+\subsection{$m < n$}
+
+Это означает, что решений, где СНУ оборачивается в ноль, множество.
+
+Новая СНУ $\mathbf{G}(\mathbf{x})$ строится по алгоритму:
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwData{$\mathbf{F}$, $\mathbf{a}$}
+\KwResult{$\mathbf{G}$}
+\Begin{
+	$\mathbf{A} \leftarrow \mathbf{J}_\mathbf{F}\roubr{\mathbf{a}}$\;
+	$\displaystyle \mathbf{y} \leftarrow \roubr{\max_i |A_{i, 1}|,\ \max_i |A_{i, 2}|,\ \dots,\ \max_i |A_{i, n}|}$\;
+	Находятся такие $i_j$, что: $y_{i_1} \geqslant y_{i_2} \geqslant \dots \geqslant y_{i_n}$\;
+	\For{$j \leftarrow 1$ \KwTo $ n - m $}{
+		$G_{i_j} \leftarrow x_{i_j} - a_{i_j}$\;
+	}
+	\For{$j \leftarrow n - m + 1$ \KwTo $ n $}{
+		$G_{i_j} \leftarrow F_{i_j} $\;
+	}
+}
+\end{algorithm}
+
+Обратите внимание, что в итоге $\mathbf{G}(\mathbf{x})$ является функцией $\mathbf{G} : \mathbb{R}^n \to \mathbb{R}^n$ и для каждой различной точки $\mathbf{a}$ функция $\mathbf{G}$ различна.
+
+\end{document}
