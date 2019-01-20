@@ -18,12 +18,16 @@
 \usepackage{polyglossia}
 \setdefaultlanguage{russian}
 \setotherlanguage{english}
+\PolyglossiaSetup{russian}{indentfirst=true}
 
 % Для математики
 \usepackage{amssymb,amsmath}
 
+% Для множества колонок
+\usepackage{multicol}
+
 % Для отображения алгоритмов
-\usepackage[linesnumbered,lined,commentsnumbered]{algorithm2e}
+\usepackage[ruled,linesnumbered,lined,commentsnumbered]{algorithm2e}
 
 % Собственные обозначения для скобок
 \newcommand{\roubr}[1]{\left(#1\right)}
@@ -40,17 +44,21 @@
 
 Всё будет описано для размерности $n = 2$, но это легко обобщается на более высокие размерности.
 
-\section{Формулировка задачи}
+\setlength{\columnsep}{30pt}
+\begin{multicols}{2}
+
+\section{Формулировка}
 
 Дана Система Нелинейных Уравнений (СНУ) в виде:
 
-$$\left\{
+\begin{equation}\label{dano}
+\left\{
 \begin{aligned}
 	&F_1(x_1,\ x_2) = 0 \\
 	&F_2(x_1,\ x_2) = 0
 \end{aligned}
 \right.
-$$
+\end{equation}
 
 Требуется, чтобы она имела непрерывные производные $1$ порядка.
 
@@ -58,17 +66,18 @@ $$
 
 \section{Обозначения}
 
-Её можно преобразовать к следующему виду, заменив аргументы функции на один векторный аргумент $\mathbf{x} = (x_1,\ x_2)$:
+Заменим в \eqref{dano} аргументы на вектор $\mathbf{x} = (x_1,\ x_2)$:
 
-$$\left\{
+\begin{equation}\label{dano1}
+\left\{
 \begin{aligned}
 	&F_1(\mathbf{x}) = 0 \\
 	&F_2(\mathbf{x}) = 0
 \end{aligned}
 \right.
-$$
+\end{equation}
 
-Далее эту СНУ можно преобразовать к одной вектор-функции $\mathbf{F}$, такой что $ \mathbf{F} : \mathbb{R}^2 \to \mathbb{R}^2 $:
+Преобразуем \eqref{dano1} к одной вектор-функции $\mathbf{F}$, такой что $ \mathbf{F} : \mathbb{R}^2 \to \mathbb{R}^2 $:
 
 $$\mathbf{F}(\mathbf{x}) = \roubr{
 \begin{aligned}
@@ -78,17 +87,21 @@ $$\mathbf{F}(\mathbf{x}) = \roubr{
 }
 $$
 
-Тогда исходная система уравнений примет вид:
+Тогда \eqref{dano} примет вид:
 
-$$\mathbf{F}(\mathbf{x}) = \mathbf{0}$$
+\begin{equation}\label{dano2}
+\mathbf{F}(\mathbf{x}) = \mathbf{0}
+\end{equation}
 
 где $\mathbf{0}= (0,\ 0)^T$.
+
+\end{multicols}
 
 \section{Преобразования}
 
 \subsection{Разложение в ряд Тейлора для функции многих переменных}
 
-Взято с \href{https://ru.wikipedia.org/wiki/%D0%A0%D1%8F%D0%B4_%D0%A2%D0%B5%D0%B9%D0%BB%D0%BE%D1%80%D0%B0#%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%A2%D0%B5%D0%B9%D0%BB%D0%BE%D1%80%D0%B0_%D0%B4%D0%BB%D1%8F_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8_%D0%B4%D0%B2%D1%83%D1%85_%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85}{Википедии}.
+Взято с \href{https://en.wikipedia.org/wiki/Taylor_series#Taylor_series_in_several_variables}{Википедии}.
 
 Пусть дана функция $f(\mathbf{x}) : \mathbb{R}^2 \to \mathbb{R}$, $\mathbf{x} = (x_1,\ x_2)^T$.
 
@@ -96,19 +109,25 @@ $$\mathbf{F}(\mathbf{x}) = \mathbf{0}$$
 
 Тогда разложение в ряд Тейлора имеет следующий вид:
 
-$$ f(\mathbf{x}) = f(\mathbf{a}) + \sum_{i = 1}^n \frac{\partial f(\mathbf{a})}{\partial x_i} (x_i - a_i) + \frac{1}{2!} \sum_{i = 1}^2\sum_{j = 1}^2 \frac{\partial f(\mathbf{a})}{\partial x_i \partial x_j} (x_i - a_i) (x_j - a_j) + R_3(\mathbf{x}) $$
+\begin{equation}
+f(\mathbf{x}) = f(\mathbf{a}) + \sum_{i = 1}^n \frac{\partial f(\mathbf{a})}{\partial x_i} (x_i - a_i) + \frac{1}{2!} \sum_{i = 1}^2\sum_{j = 1}^2 \frac{\partial f(\mathbf{a})}{\partial x_i \partial x_j} (x_i - a_i) (x_j - a_j) + R_3(\mathbf{x}) 
+\end{equation}
 
 Раскроем сумму первых двух членов предыдущего равенства:
 
-$$ f(\mathbf{x}) = f(\mathbf{a}) + \frac{\partial f(\mathbf{a})}{\partial x_i} (x_1 - a_1) + \frac{\partial f(\mathbf{a})}{\partial x_2} (x_2 - a_2) + R_2(\mathbf{x}) $$
+\begin{equation}\label{taylor}
+f(\mathbf{x}) = f(\mathbf{a}) + \frac{\partial f(\mathbf{a})}{\partial x_i} (x_1 - a_1) + \frac{\partial f(\mathbf{a})}{\partial x_2} (x_2 - a_2) + R_2(\mathbf{x})
+\end{equation}
 
-Где $R_n(\mathbf{x})$ --- остаточный член в форме Лагранжа, $ R_n(\mathbf{x}) \xrightarrow{n\to \infty} 0 $.
+\begin{equation}\label{rtozero}
+\text{Где } R_n(\mathbf{x}) \text{ --- остаточный член в форме Лагранжа, } R_n(\mathbf{x}) \xrightarrow{n\to \infty} 0 \text{ .}
+\end{equation}
 
 \subsection{Разложение в ряд Тейлора СНУ}
 
-Любой итерационный метод имеет начальное приближение $\mathbf{x}^{[0]}$, которое задается извне. На $k$-м шаге имеется текущее решение $\mathbf{x}^{[k]}$. Обозначим за $\hat{\mathbf{x}}$ искомое решение, и введем ещё обозначение $\Delta\mathbf{x}^{[k]} = \hat{\mathbf{x}} - \mathbf{x}^{[k]}$.
+Обозначим за $\hat{\mathbf{x}}$ искомое решение, за $\mathbf{x}^{[k]}$ решение на $k$-м шаге и введем ещё обозначение $\Delta\mathbf{x}^{[k]} = \hat{\mathbf{x}} - \mathbf{x}^{[k]}$.
 
-Разложим функцию $F_i\roubr{\mathbf{x}}$ в окрестности точки $\mathbf{x}^{[k]}$ в ряд Тейлора:
+Разложим $F_i\roubr{\mathbf{x}}$ в окрестности точки $\mathbf{x}^{[k]}$ в ряд Тейлора по формуле \eqref{taylor}:
 
 $$ F_i\roubr{\mathbf{x}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \roubr{x_1 - x^{[k]}_1} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \roubr{x_2 - x^{[k]}_2} + R_2\roubr{\mathbf{x}} $$
 
@@ -116,7 +135,7 @@ $$ F_i\roubr{\mathbf{x}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roub
 
 $$\displaystyle F_i\roubr{\hat{\mathbf{x}}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R_2\roubr{\mathbf{x}^{[k]}} $$
 
-Теперь запишем СНУ $\mathbf{F}\roubr{\hat{\mathbf{x}}} = 0$ с учетом предыдущего разложения:
+Теперь запишем \eqref{dano2} с учетом предыдущего разложения:
 
 $$ \left\{
 \begin{aligned}
@@ -152,7 +171,9 @@ $$
 
 Мы не не знаем как вычислять $\mathbf{R}_2(\mathbf{x})$, но можем им пренебречь, так как он стремится к нулю. Именно из-за этого принебрежения мы не сразу получаем точное решение, а процесс становится итеративным. Итог:
 
-$$ \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}} $$
+\begin{equation}\label{slau}
+\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}}
+\end{equation}
 
 Можно заметить, что это СЛАУ. Её можно легко решить известными методами.
 
@@ -160,43 +181,46 @@ $$ \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} =
 
 Весь метод заключается в итерационном процессе:
 
-$$\mathbf{x}^{[k+1]} = \mathbf{x}^{[k]} + c \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^{-1} \mathbf{F}\roubr{\mathbf{x}^{[k]}},\ c \in \sqbr{0,\ 1}$$
+\begin{equation}\label{iter}
+\mathbf{x}^{[k+1]} = \mathbf{x}^{[k]} - c \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^{-1} \mathbf{F}\roubr{\mathbf{x}^{[k]}},\ c \in \sqbr{0,\ 1}
+\end{equation}
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
-\KwData{$\varepsilon_1$, $\varepsilon_2$, $m$, $\mathbf{F}$, $\mathbf{x}^{[0]}$}
+\KwIn{$\varepsilon_1$, $\varepsilon_2$, $m$, $\mathbf{F}$, $\mathbf{x}^{[0]}$}
 \KwResult{$\mathbf{x}^{[k]}$}
 \Begin{
 	$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[0]}$\;
 	$\beta \leftarrow 1$\;
-	$i \leftarrow 0$\;
-	\While{$||\mathbf{F}\roubr{\mathbf{x}}|| > \varepsilon_1$ и $\beta > \varepsilon_2$ и $i < m$}{
+	$k \leftarrow 0$\;
+	\While{$||\mathbf{F}\roubr{\mathbf{x}}|| > \varepsilon_1$ и $\beta > \varepsilon_2$ и $k < m$}{
 		$\mathbf{A} \leftarrow \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
-		$\mathbf{b} \leftarrow \mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
+		$\mathbf{b} \leftarrow -\mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
 		Решить СЛАУ $\mathbf{A}\cdot \mathbf{x} = \mathbf{b}$, результат поместить в $\mathbf{x}$\;
 		$\beta \leftarrow 1$\;
 		\While{$||\mathbf{F}\roubr{\mathbf{x}^{[k]} + \beta \mathbf{x}}|| > ||\mathbf{F}\roubr{\mathbf{x}^{[k]}}||$ и $\beta > \varepsilon_2$}{
 			$\beta \leftarrow 0.5 \beta$\;
 		}
 		$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[k]} + \beta \mathbf{x}$\;
-		$i \leftarrow i + 1$\;
+		$k \leftarrow k + 1$\;
 	}
 }
+\caption{Метод Ньютона}
 \end{algorithm}
 
 Дополнительный цикл с переменной $\beta$ создан для того, чтобы невязка всегда уменьшалась.
 
-\textit{Заметьте, что} данный алгоритм не зависит от размерности системы, а, следовательно, может быть применен к любой размерности задачи.
+\textit{Заметьте, что} данный алгоритм не зависит от размерности системы, а, следовательно, может быть применен к любой размерности исходной СНУ.
 
 \textit{Замечание:} в алгоритме используется матрица Якоби в известной точке, что означает, что знать её аналитическое выражение не нужно: её можно вычислять при помощи численного взятия производной в конкретной точке.
 
 \subsection{Одномерный случай}
 
-В одномерном случае это преобразуется к:
+В одномерном случае \eqref{iter} преобразуется к:
 
-$$ x^{[k+1]} = x^{[k]} + c \roubr{\frac{d f\roubr{x^{[k]}}}{dx}}^{-1} f\roubr{x^{[k]}} = x^{[k]} + c \frac{f\roubr{x^{[k]}}}{f'\roubr{x^{[k]}}} $$
+$$ x^{[k+1]} = x^{[k]} - c \roubr{\frac{d f\roubr{x^{[k]}}}{dx}}^{-1} f\roubr{x^{[k]}} = x^{[k]} - c \frac{f\roubr{x^{[k]}}}{f'\roubr{x^{[k]}}} $$
 
-\section{Конкретный пример}
+\section{Пример}
 
 Например, у нас имеется следующая СНУ:
 
@@ -244,7 +268,42 @@ $$
 
 Вышеописанный алгоритм работает только когда $m=n$, в случае же $m\neq n$ есть несколько методов приведения к системы квадратному виду.
 
-Следующие методы показывают как надо модифицировать СНУ для конкретной точки, поэтому не получится их применить для того, чтобы один раз вычислить новую СНУ, новую СНУ придётся считать на каждой итерации заного.
+Следующие методы показывают как надо модифицировать СНУ для конкретной точки, поэтому не получится их применить для того, чтобы один раз вычислить новую СНУ, её придётся считать на каждой итерации заного.
+
+Новая СНУ и соответствующая ей матрица Якоби формируется только для поиска $\Delta\mathbf{x}$ при решении СЛАУ, для расчета невязки используется изначальная СНУ $\mathbf{F}$.
+
+\subsection{Модифицированный алгоритм}
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwIn{$\varepsilon_1$, $\varepsilon_2$, $m$, $\mathbf{F}$, $\mathbf{x}^{[0]}$, $\mathbb{S}$, $\mathbb{J}$}
+\KwResult{$\mathbf{x}^{[k]}$}
+\Begin{
+	$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[0]}$\;
+	$\beta \leftarrow 1$\;
+	$k \leftarrow 0$\;
+	\While{$||\mathbf{F}\roubr{\mathbf{x}}|| > \varepsilon_1$ и $\beta > \varepsilon_2$ и $k < m$}{
+		$\mathbf{G} \leftarrow \mathbb{S}\roubr{\mathbf{F},\ \mathbf{x}^{[k]}}$\;
+		$\mathbf{I} \leftarrow \mathbb{J}\roubr{\mathbf{F},\ \mathbf{G},\ \mathbf{x}^{[k]}}$\;
+		$\mathbf{A} \leftarrow \mathbf{I}\roubr{\mathbf{x}^{[k]}}$\;
+		$\mathbf{b} \leftarrow -\mathbf{G}\roubr{\mathbf{x}^{[k]}}$\;
+		Решить СЛАУ $\mathbf{A}\cdot \mathbf{x} = \mathbf{b}$, результат поместить в $\mathbf{x}$\;
+		$\beta \leftarrow 1$\;
+		\While{$||\mathbf{F}\roubr{\mathbf{x}^{[k]} + \beta \mathbf{x}}|| > ||\mathbf{F}\roubr{\mathbf{x}^{[k]}}||$ и $\beta > \varepsilon_2$}{
+			$\beta \leftarrow 0.5 \beta$\;
+		}
+		$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[k]} + \beta \mathbf{x}$\;
+		$k \leftarrow k + 1$\;
+	}
+}
+\caption{Метод Ньютона для $m \neq n$}
+\end{algorithm}
+
+$\mathbb{S}$ --- это функция, преобразующая $\mathbf{F}$ к размерности $n$ в конкретной точке. Об видах этой функции будет написано далее. В случае когда размерность СНУ совпадает с размерностью решения $\mathbb{S}(\mathbf{F},\ \mathbf{x}) = \mathbf{F}$.
+
+Аналогично $\mathbb{J}$ --- функция возвращающая матрицу Якоби для решения СЛАУ в конкретной точке. Если не указано как её вычислять, то $\mathbb{J}(\mathbf{F},\ \mathbf{G},\ \mathbf{x}) = \mathbf{J}_{\mathbf{G}}$.
+
+Причем модификации затрагивают только часть, относящуюся к решению СЛАУ, но не затрагивают часть для вычисления нормы (невязки). Так сделано потому что всё же решается функция $\mathbf{F}$, а не $\mathbf{G}$. 
 
 \subsection{$m < n$}
 
@@ -261,14 +320,68 @@ $$
 	$\displaystyle \mathbf{y} \leftarrow \roubr{\max_i |A_{i, 1}|,\ \max_i |A_{i, 2}|,\ \dots,\ \max_i |A_{i, n}|}$\;
 	Находятся такие $i_j$, что: $y_{i_1} \geqslant y_{i_2} \geqslant \dots \geqslant y_{i_n}$\;
 	\For{$j \leftarrow 1$ \KwTo $ n - m $}{
-		$G_{i_j} \leftarrow x_{i_j} - a_{i_j}$\;
+		$G_j(\mathbf{x}) \leftarrow x_{i_j} - a_{i_j}$\;
 	}
 	\For{$j \leftarrow n - m + 1$ \KwTo $ n $}{
-		$G_{i_j} \leftarrow F_{i_j} $\;
+		$G_j(\mathbf{x}) \leftarrow F_{i_j}(\mathbf{x}) $\;
 	}
 }
+\caption{$m < n,\ \mathbb{S}_1\roubr{\mathbf{F},\ \mathbf{a}}$\label{S_1}}
 \end{algorithm}
 
 Обратите внимание, что в итоге $\mathbf{G}(\mathbf{x})$ является функцией $\mathbf{G} : \mathbb{R}^n \to \mathbb{R}^n$ и для каждой различной точки $\mathbf{a}$ функция $\mathbf{G}$ различна.
+
+Такое преобразование делается для того, чтобы при нахождении $\Delta \mathbf{x}$ компоненты с минимальными частными производными были равны нулю.
+
+\subsection{$m > n$}
+
+Это означает, что решений может не быть, в данном случае метод Ньютона находит точку с минимальной невязкой.
+
+\subsubsection{Метод исключения}
+
+Из системы исключаются те уравнения, для которых $F_i(\mathbf{x})$ минимальны.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwData{$\mathbf{F}$, $\mathbf{a}$}
+\KwResult{$\mathbf{G}$}
+\Begin{
+	$\displaystyle \mathbf{y} \leftarrow \roubr{|F_1(\mathbf{x})|,\ |F_2(\mathbf{x})|,\ \dots,\ |F_m(\mathbf{x})|}$\;
+	Находятся такие $i_j$, что: $y_{i_1} \geqslant y_{i_2} \geqslant \dots \geqslant y_{i_m}$\;
+	\For{$j \leftarrow 1$ \KwTo $ n - m $}{
+		$G_j(\mathbf{x}) \leftarrow F_{i_j}(\mathbf{x}) $\;
+	}
+}
+\caption{$m > n,\ \mathbb{S}_2\roubr{\mathbf{F},\ \mathbf{a}}$\label{S_2}}
+\end{algorithm}
+
+\subsubsection{Метод свертки}
+
+Для всех лишних уравнений у которых $F_i(\mathbf{x})$ минимальны, проводится свертка. Вместо исключаемых уравнений берется одно уравнение с суммой квадратов исключаемых уравнений.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\KwData{$\mathbf{F}$, $\mathbf{a}$}
+\KwResult{$\mathbf{G}$}
+\Begin{
+	$\displaystyle \mathbf{y} \leftarrow \roubr{|F_1(\mathbf{x})|,\ |F_2(\mathbf{x})|,\ \dots,\ |F_m(\mathbf{x})|}$\;
+	Находятся такие $i_j$, что: $y_{i_1} \geqslant y_{i_2} \geqslant \dots \geqslant y_{i_m}$\;
+	\For{$j \leftarrow 1$ \KwTo $ n - m - 1 $}{
+		$G_j(\mathbf{x}) \leftarrow F_{i_j}(\mathbf{x}) $\;
+	}
+	$\displaystyle G_n \leftarrow \sum_{j = n - m}^{n} F_{i_j}^2(\mathbf{x})$\;
+}
+\caption{$m > n,\ \mathbb{S}_3\roubr{\mathbf{F},\ \mathbf{a}}$\label{S_3}}
+\end{algorithm}
+
+\subsubsection{Процедура симметризации}
+
+Вместо исходной системы должна решаться система:
+
+$$ \mathbb{S}_4\roubr{\mathbf{F},\ \mathbf{x}^{[k]}} = \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^T \cdot \mathbf{F}\roubr{\mathbf{x}^{[k]}} $$
+
+$$ \mathbb{J}_4\roubr{\mathbf{F},\ \mathbf{G},\ \mathbf{x}^{[k]}} = \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^T \cdot \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} $$
+
+\textit{Замечание:} только ради этой процедуры в аргументах $\mathbb{J}$ имеется $\mathbf{F}$, и в принципе только ради этой процедуры введена функция $\mathbb{J}$. Причем $\mathbf{G}$ здесь не используется.
 
 \end{document}
