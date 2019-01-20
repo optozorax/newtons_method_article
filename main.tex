@@ -28,11 +28,12 @@
 
 % Для отображения алгоритмов
 \usepackage[ruled,linesnumbered,lined,commentsnumbered]{algorithm2e}
+\SetKw{KwAnd}{and}
 
 % Собственные обозначения для скобок
 \newcommand{\roubr}[1]{\left(#1\right)}
-\newcommand{\sqbr}[1]{\left(#1\right)}
-\newcommand{\cubr}[1]{\left(#1\right)}
+\newcommand{\sqbr}[1]{\left[#1\right]}
+\newcommand{\cubr}[1]{\left\{#1\right\}}
 
 % Для отображения ссылок
 \usepackage{hyperref}
@@ -95,6 +96,8 @@ $$
 
 где $\mathbf{0}= (0,\ 0)^T$.
 
+Под \textbf{невязкой} понимается вектор $\mathbf{F}(\mathbf{x})$.
+
 \end{multicols}
 
 \section{Преобразования}
@@ -116,7 +119,7 @@ f(\mathbf{x}) = f(\mathbf{a}) + \sum_{i = 1}^n \frac{\partial f(\mathbf{a})}{\pa
 Раскроем сумму первых двух членов предыдущего равенства:
 
 \begin{equation}\label{taylor}
-f(\mathbf{x}) = f(\mathbf{a}) + \frac{\partial f(\mathbf{a})}{\partial x_i} (x_1 - a_1) + \frac{\partial f(\mathbf{a})}{\partial x_2} (x_2 - a_2) + R_2(\mathbf{x})
+f(\mathbf{x}) = f(\mathbf{a}) + \frac{\partial f(\mathbf{a})}{\partial x_1} (x_1 - a_1) + \frac{\partial f(\mathbf{a})}{\partial x_2} (x_2 - a_2) + R_2(\mathbf{x})
 \end{equation}
 
 \begin{equation}\label{rtozero}
@@ -125,7 +128,7 @@ f(\mathbf{x}) = f(\mathbf{a}) + \frac{\partial f(\mathbf{a})}{\partial x_i} (x_1
 
 \subsection{Разложение в ряд Тейлора СНУ}
 
-Обозначим за $\hat{\mathbf{x}}$ искомое решение, за $\mathbf{x}^{[k]}$ решение на $k$-м шаге и введем ещё обозначение $\Delta\mathbf{x}^{[k]} = \hat{\mathbf{x}} - \mathbf{x}^{[k]}$.
+Обозначим за $\hat{\mathbf{x}}$ искомое решение, за $\mathbf{x}^{[k]}$ решение на $k$-м шаге и введем ещё обозначение смещения $\Delta\mathbf{x}^{[k]} = \hat{\mathbf{x}} - \mathbf{x}^{[k]}$.
 
 Разложим $F_i\roubr{\mathbf{x}}$ в окрестности точки $\mathbf{x}^{[k]}$ в ряд Тейлора по формуле \eqref{taylor}:
 
@@ -133,14 +136,14 @@ $$ F_i\roubr{\mathbf{x}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roub
 
 Подставив в это разложение точку $\hat{\mathbf{x}}$ получаем следующее:
 
-$$\displaystyle F_i\roubr{\hat{\mathbf{x}}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R_2\roubr{\mathbf{x}^{[k]}} $$
+$$\displaystyle F_i\roubr{\hat{\mathbf{x}}} = F_i\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_i\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R_2\roubr{\hat{\mathbf{x}}} $$
 
 Теперь запишем \eqref{dano2} с учетом предыдущего разложения:
 
 $$ \left\{
 \begin{aligned}
-& F_1\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_1\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_1\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R^{F_1}_2\roubr{\mathbf{x}^{[k]}} = 0 \\
-& F_2\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_2\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_2\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R^{F_2}_2\roubr{\mathbf{x}^{[k]}} = 0
+& F_1\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_1\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_1\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R^{F_1}_2\roubr{\hat{\mathbf{x}}} = 0 \\
+& F_2\roubr{\mathbf{x}^{[k]}} + \frac{\partial F_2\roubr{\mathbf{x}^{[k]}}}{\partial x_1} \Delta x^{[k]}_1 + \frac{\partial F_2\roubr{\mathbf{x}^{[k]}}}{\partial x_2} \Delta x^{[k]}_2 + R^{F_2}_2\roubr{\hat{\mathbf{x}}} = 0
 \end{aligned}
 \right.$$
 
@@ -149,27 +152,27 @@ $$ \left\{
 $$
 \mathbf{F}\roubr{\mathbf{x}^{[k]}} + 
 \begin{pmatrix}
-\displaystyle \frac{\partial F_1}{\partial x_1} & \displaystyle \frac{\partial F_1}{\partial x_2} \\
+\displaystyle \frac{\partial F_1}{\partial x_1} & \displaystyle \frac{\partial F_1}{\partial x_2} \\ \\
 \displaystyle \frac{\partial F_2}{\partial x_1} & \displaystyle \frac{\partial F_2}{\partial x_2}
 \end{pmatrix} \roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} + \begin{pmatrix}
-\displaystyle R^{F_1}_2\roubr{\mathbf{x}^{[k]}} \\
-\displaystyle R^{F_2}_2\roubr{\mathbf{x}^{[k]}}
+\displaystyle R^{F_1}_2\roubr{\hat{\mathbf{x}}} \\
+\displaystyle R^{F_2}_2\roubr{\hat{\mathbf{x}}}
 \end{pmatrix} = \mathbf{0}
 $$
 
 $$
-\mathbf{F}\roubr{\mathbf{x}^{[k]}} + \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} + \mathbf{R}_2\roubr{\mathbf{x}^{[k]}} = \mathbf{0}
+\mathbf{F}\roubr{\mathbf{x}^{[k]}} + \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} + \mathbf{R}_2\roubr{\hat{\mathbf{x}}} = \mathbf{0}
 $$
 
 $$
-\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}} - \mathbf{R}_2\roubr{\mathbf{x}^{[k]}}
+\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}} - \mathbf{R}_2\roubr{\hat{\mathbf{x}}}
 $$
 
 Где $\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}}$ --- матрица Якоби функции $\mathbf{F}$ в точке $\mathbf{x}$.
 
 Из этого уравнения можно найти $\Delta\mathbf{x}^{[k]}$, который прибавляется к текущему решению $\mathbf{x}^{[k]}$ чтобы найти $\hat{\mathbf{x}}$. 
 
-Мы не не знаем как вычислять $\mathbf{R}_2(\mathbf{x})$, но можем им пренебречь, так как он стремится к нулю. Именно из-за этого принебрежения мы не сразу получаем точное решение, а процесс становится итеративным. Итог:
+Мы не не знаем как вычислять $\mathbf{R}_2\roubr{\hat{\mathbf{x}}}$, но можем им пренебречь, так как он стремится к нулю. Именно из-за этого принебрежения мы не сразу получаем точное решение, а процесс становится итеративным. Итог:
 
 \begin{equation}\label{slau}
 \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}} \cdot \Delta \mathbf{x}^{[k]} = -\mathbf{F}\roubr{\mathbf{x}^{[k]}}
@@ -181,9 +184,21 @@ $$
 
 Весь метод заключается в итерационном процессе:
 
+$$
+\mathbf{x}^{[k+1]} = \mathbf{x}^{[k]} + \Delta \mathbb{x}^{[k]}
+$$
+
 \begin{equation}\label{iter}
-\mathbf{x}^{[k+1]} = \mathbf{x}^{[k]} - c \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^{-1} \mathbf{F}\roubr{\mathbf{x}^{[k]}},\ c \in \sqbr{0,\ 1}
+\mathbf{x}^{[k+1]} = \mathbf{x}^{[k]} - \roubr{\mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}}^{-1} \mathbf{F}\roubr{\mathbf{x}^{[k]}}
 \end{equation}
+
+Иногда может получаться такой $\Delta \mathbf{x}$, что невязка в векторе $\mathbf{x}^{[k+1]}$ будет больше, чем в $\mathbf{x}^{[k]}$, поэтому вводится коэффициент $\beta \in \sqbr{0, 1}$, который домножается на $\Delta \mathbf{x}$, причем $\beta$ подбирается такой, чтобы невязка строго уменьшалась.
+
+Чтобы найти такой $\beta$, при котором невязка будет уменьшаться, используется аналог двоичного поиска: изначально $\beta = 1$, затем, пока невязка нового решения больше, чем предыдущего, $\beta$ уменьшается вдвое. 
+
+Так же, если $\beta \to 0$, то это означает, что невязка не может быть уменьшена на текущей итерации, и это ещё один повод завершить итерационный процесс.
+
+Далее за $k$ обозначается количество итераций, а за $m$ максимальное число итераций.
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
@@ -193,12 +208,12 @@ $$
 	$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[0]}$\;
 	$\beta \leftarrow 1$\;
 	$k \leftarrow 0$\;
-	\While{$||\mathbf{F}\roubr{\mathbf{x}}|| > \varepsilon_1$ и $\beta > \varepsilon_2$ и $k < m$}{
+	\While{$||\mathbf{F}\roubr{\mathbf{x}}|| > \varepsilon_1$ \KwAnd $\beta > \varepsilon_2$ \KwAnd $k < m$}{
 		$\mathbf{A} \leftarrow \mathbf{J}_\mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
 		$\mathbf{b} \leftarrow -\mathbf{F}\roubr{\mathbf{x}^{[k]}}$\;
 		Решить СЛАУ $\mathbf{A}\cdot \mathbf{x} = \mathbf{b}$, результат поместить в $\mathbf{x}$\;
 		$\beta \leftarrow 1$\;
-		\While{$||\mathbf{F}\roubr{\mathbf{x}^{[k]} + \beta \mathbf{x}}|| > ||\mathbf{F}\roubr{\mathbf{x}^{[k]}}||$ и $\beta > \varepsilon_2$}{
+		\While{$||\mathbf{F}\roubr{\mathbf{x}^{[k]} + \beta \mathbf{x}}|| > ||\mathbf{F}\roubr{\mathbf{x}^{[k]}}||$ \KwAnd $\beta > \varepsilon_2$}{
 			$\beta \leftarrow 0.5 \beta$\;
 		}
 		$\mathbf{x}^{[k]} \leftarrow \mathbf{x}^{[k]} + \beta \mathbf{x}$\;
@@ -208,9 +223,7 @@ $$
 \caption{Метод Ньютона}
 \end{algorithm}
 
-Дополнительный цикл с переменной $\beta$ создан для того, чтобы невязка всегда уменьшалась.
-
-\textit{Заметьте, что} данный алгоритм не зависит от размерности системы, а, следовательно, может быть применен к любой размерности исходной СНУ.
+\textit{Замечание:} данный алгоритм не зависит от размерности системы, а, следовательно, может быть применен к любой размерности исходной СНУ.
 
 \textit{Замечание:} в алгоритме используется матрица Якоби в известной точке, что означает, что знать её аналитическое выражение не нужно: её можно вычислять при помощи численного взятия производной в конкретной точке.
 
@@ -299,11 +312,11 @@ $$
 \caption{Метод Ньютона для $m \neq n$}
 \end{algorithm}
 
-$\mathbb{S}$ --- это функция, преобразующая $\mathbf{F}$ к размерности $n$ в конкретной точке. Об видах этой функции будет написано далее. В случае когда размерность СНУ совпадает с размерностью решения $\mathbb{S}(\mathbf{F},\ \mathbf{x}) = \mathbf{F}$.
+$\mathbb{S}$ --- это функция, преобразующая $\mathbf{F}$ к размерности $n$ в конкретной точке. О видах этой функции будет написано далее. В случае, когда размерность СНУ совпадает с размерностью решения, $\mathbb{S}(\mathbf{F},\ \mathbf{x}) = \mathbf{F}$.
 
-Аналогично $\mathbb{J}$ --- функция возвращающая матрицу Якоби для решения СЛАУ в конкретной точке. Если не указано как её вычислять, то $\mathbb{J}(\mathbf{F},\ \mathbf{G},\ \mathbf{x}) = \mathbf{J}_{\mathbf{G}}$.
+Аналогично $\mathbb{J}$ --- функция возвращающая матрицу Якоби для решения СЛАУ в конкретной точке. Если не указано, как её вычислять, то $\mathbb{J}(\mathbf{F},\ \mathbf{G},\ \mathbf{x}) = \mathbf{J}_{\mathbf{G}}$.
 
-Причем модификации затрагивают только часть, относящуюся к решению СЛАУ, но не затрагивают часть для вычисления нормы (невязки). Так сделано потому что всё же решается функция $\mathbf{F}$, а не $\mathbf{G}$. 
+Причем модификации затрагивают только часть, относящуюся к решению СЛАУ, но не затрагивают часть для вычисления нормы (невязки). Так сделано, потому что всё же решается функция $\mathbf{F}$, а не $\mathbf{G}$. 
 
 \subsection{$m < n$}
 
